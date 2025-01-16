@@ -41,7 +41,7 @@ public class BibliotecaServiceImpl implements BibliotecaService {
          * throw new IllegalStateException("Uno o más libros ya están reservados.")
          * Recuperar un cliente desde la api externa /api/personas/aleatorio y guardar la reserva
          */
-
+        return null;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class BibliotecaServiceImpl implements BibliotecaService {
          * actualizar el estado de los libros a DISPONIBLE
          * y guardar el registro con los datos actualizados 
          */
-
+        return null;
     }
 
     @Override
@@ -72,8 +72,8 @@ public class BibliotecaServiceImpl implements BibliotecaService {
          * hasta 2 dias se debe pagar $100 por libro
          * desde 3 dias y hasta 5 dias se debe pagar $150 por libro
          * más de 5 dias se debe pagar $150 por libro + $30 por cada día extra
-         */        
-        
+         */
+        return null;
     }
 
     @Override
@@ -83,8 +83,8 @@ public class BibliotecaServiceImpl implements BibliotecaService {
          * Completar el metodo de reporte semanal
          * se debe retornar la lista de registros de la semana tomando como referencia
          * la fecha de inicio para la busqueda
-         */ 
-
+         */
+        return null;
     }
 
     @Override
@@ -94,7 +94,7 @@ public class BibliotecaServiceImpl implements BibliotecaService {
          * Completar el metodo de reporte de libros mas alquilados
          * se debe retornar la lista de libros mas alquilados
          */ 
-
+        return null;
     }
 
 }

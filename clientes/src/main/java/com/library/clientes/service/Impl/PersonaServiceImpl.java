@@ -34,7 +34,7 @@ public class PersonaServiceImpl implements PersonaService {
         /*
          * Completar el metodo para retornar una persona de forma aleatoria
          */
-        
+        return null;
     }
 
     @Override

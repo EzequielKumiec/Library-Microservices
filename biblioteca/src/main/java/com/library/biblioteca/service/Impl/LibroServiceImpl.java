@@ -24,7 +24,7 @@ public class LibroServiceImpl implements LibroService {
          * Completar el metodo de registro
          * el estado inicial del libro debe ser DISPONIBLE
          */
-
+        return null;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class LibroServiceImpl implements LibroService {
         /**
          * Completar el metodo 
          */
-        
+        return null;
     }
 
     @Override
@@ -50,5 +50,6 @@ public class LibroServiceImpl implements LibroService {
         /**
          * Completar el metodo
          */
+        return null;
     }
 }
