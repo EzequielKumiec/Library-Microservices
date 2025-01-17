@@ -14,6 +14,27 @@ services:
       - clientes-service
       - biblioteca-service
 
+  # Servicio de base de datos MySQL
+  mysql-db:
+    image: mysql:8.0
+    container_name: biblioteca_db-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: biblioteca_db
+      MYSQL_USER: tup
+      MYSQL_PASSWORD: tup
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - library-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # Clientes Service
   clientes-service:
     build:
@@ -35,27 +56,6 @@ services:
       - library-network
     depends_on:
       - mysql-db
-
-  # Servicio de base de datos MySQL
-  mysql-db:
-    image: mysql:8.0
-    container_name: biblioteca_db-mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: biblioteca_db
-      MYSQL_USER: tup
-      MYSQL_PASSWORD: tup
-    ports:
-      - "3307:3306"
-    volumes:
-      - mysql-data:/var/lib/mysql
-    networks:
-      - library-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
 # Volumen persistente para la base de datos
 volumes:

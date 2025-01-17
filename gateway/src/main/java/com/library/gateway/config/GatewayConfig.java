@@ -12,9 +12,9 @@ public class GatewayConfig {
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route("clientes_route", r -> r.path("/api/personas/**")
-                        .uri("http://localhost:8081"))
+                        .uri("http://clientes-service:8081/api/personas/"))  // Cambiado localhost a clientes-service
                 .route("biblioteca_route", r -> r.path("/api/biblioteca/**")
-                        .uri("http://localhost:8082"))
+                        .uri("http://biblioteca-service:8082"))  // Cambiado localhost a biblioteca-service
                 .build();
     }
 }

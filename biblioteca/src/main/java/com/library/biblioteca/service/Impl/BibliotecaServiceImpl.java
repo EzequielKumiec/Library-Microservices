@@ -48,10 +48,12 @@ public class BibliotecaServiceImpl implements BibliotecaService {
         libroRepository.saveAll(libros);
         Registro registro = new Registro();
         registro.setLibrosReservados(libros);
-        registro.setClienteId(restTemplate.getForObject("/api/personas/aleatorio",ClienteDTO.class).getId());
-        registro.setNombreCliente(restTemplate.getForObject("/api/personas/aleatorio",ClienteDTO.class).getNombre());
+        String url = "http://clientes-service:8081/api/personas/aleatorio";
+        ClienteDTO cliente = restTemplate.getForObject(url, ClienteDTO.class);
+        registro.setClienteId(cliente.getId());
+        registro.setNombreCliente(cliente.getNombre());
         registro.setFechaReserva(LocalDate.now());
-        return registro;
+        return registroRepository.save(registro);
     }
 
     @Override
