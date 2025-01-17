@@ -30,11 +30,9 @@ public class PersonaServiceImpl implements PersonaService {
 
     @Override
     public Persona obtenerPersonaAlAzar() {
-        // TODO
-        /*
-         * Completar el metodo para retornar una persona de forma aleatoria
-         */
-        return null;
+        List<Persona> personaList = obtenerTodasLasPersonas();
+        Random rand = new Random();
+        return personaList.get(rand.nextInt(personaList.size()));
     }
 
     @Override

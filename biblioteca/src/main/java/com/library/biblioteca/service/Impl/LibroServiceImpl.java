@@ -19,37 +19,22 @@ public class LibroServiceImpl implements LibroService {
 
     @Override
     public Libro registrarLibro(Libro libro) {
-        //TODO
-        /**
-         * Completar el metodo de registro
-         * el estado inicial del libro debe ser DISPONIBLE
-         */
-        return null;
+        libro.setEstado(EstadoLibro.DISPONIBLE);
+        return libroRepository.save(libro);
     }
 
     @Override
     public List<Libro> obtenerTodosLosLibros() {
-        //TODO
-        /**
-         * Completar el metodo 
-         */
-        return null;
+        return libroRepository.findAll();
     }
 
     @Override
     public void eliminarLibro(Long id) {
-        //TODO
-        /**
-         * Completar el metodo
-         */
+        libroRepository.deleteById(id);
     }
 
     @Override
     public Libro actualizarLibro(Libro libro) {
-        //TODO
-        /**
-         * Completar el metodo
-         */
-        return null;
+        return libroRepository.save(libro);
     }
 }

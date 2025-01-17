@@ -1,5 +1,6 @@
 package com.library.biblioteca.controller;
 
+import com.library.biblioteca.enums.EstadoLibro;
 import com.library.biblioteca.model.Libro;
 import com.library.biblioteca.model.Registro;
 import com.library.biblioteca.service.BibliotecaService;
@@ -247,4 +248,69 @@ class BibliotecaControllerTest {
             }
         }
     }
+    @Test
+    void testVerTodosLosLibros() throws Exception {
+        List<Libro> libros = Arrays.asList(
+                new Libro(1L,"1234567890", "Libro A","", EstadoLibro.DISPONIBLE),
+                new Libro(2L,"0987654321", "Libro B","", EstadoLibro.DISPONIBLE)
+        );
+
+        when(libroService.obtenerTodosLosLibros()).thenReturn(libros);
+
+        mockMvc.perform(get("/api/biblioteca/libros"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].isbn").value("1234567890"))
+                .andExpect(jsonPath("$[0].titulo").value("Libro A"))
+                .andExpect(jsonPath("$[1].isbn").value("0987654321"))
+                .andExpect(jsonPath("$[1].titulo").value("Libro B"));
+    }
+
+    @Test
+    void testActualizarLibro() throws Exception {
+        Libro libro = new Libro();
+        libro.setIsbn("1234567890");
+        libro.setTitulo("Libro Actualizado");
+
+        when(libroService.actualizarLibro(any(Libro.class))).thenReturn(libro);
+
+        mockMvc.perform(put("/api/biblioteca/libros")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"isbn\":\"1234567890\",\"titulo\":\"Libro Actualizado\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.isbn").value("1234567890"))
+                .andExpect(jsonPath("$.titulo").value("Libro Actualizado"));
+    }
+
+    @Test
+    void testEliminarLibro() throws Exception {
+        doNothing().when(libroService).eliminarLibro(anyLong());
+
+        mockMvc.perform(delete("/api/biblioteca/libros/{id}", 1L))
+                .andExpect(status().isOk());
+
+        verify(libroService, times(1)).eliminarLibro(1L);
+    }
+
+    @Test
+    void testVerTodosLosAlquileres() throws Exception {
+        Registro registro1 = new Registro();
+        registro1.setId(1L);
+        registro1.setClienteId(100L);
+
+        Registro registro2 = new Registro();
+        registro2.setId(2L);
+        registro2.setClienteId(101L);
+
+        List<Registro> registros = Arrays.asList(registro1, registro2);
+
+        when(bibliotecaService.verTodosLosAlquileres()).thenReturn(registros);
+
+        mockMvc.perform(get("/api/biblioteca/alquilar"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[1].id").value(2L));
+    }
+
 }

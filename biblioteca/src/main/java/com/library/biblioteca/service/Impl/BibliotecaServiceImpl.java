@@ -8,6 +8,10 @@ import com.library.biblioteca.model.Registro;
 import com.library.biblioteca.repository.LibroRepository;
 import com.library.biblioteca.repository.RegistroRepository;
 import com.library.biblioteca.service.BibliotecaService;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -32,29 +36,34 @@ public class BibliotecaServiceImpl implements BibliotecaService {
 
     @Override
     public Registro alquilarLibros(List<String> isbns) {
-        //TODO
-        /**
-         * Completar el metodo de alquiler
-         * Se debe buscar la lista de libros por su codigo de isbn,
-         * validar que los libros a alquilar tengan estado DISPONIBLE sino arrojar una exception
-         * ya que solo se pueden alquilar libros que esten en dicho estado
-         * throw new IllegalStateException("Uno o más libros ya están reservados.")
-         * Recuperar un cliente desde la api externa /api/personas/aleatorio y guardar la reserva
-         */
-        return null;
+        List<Libro> libros = new ArrayList<>();
+        for (String isbn : isbns) {
+            Libro libro = libroRepository.findByIsbn(isbn);
+            if (!libro.getEstado().equals(EstadoLibro.DISPONIBLE)){
+                throw new IllegalStateException("Uno o más libros ya están reservados.");
+            }
+            libro.setEstado(EstadoLibro.RESERVADO);
+            libros.add(libro);
+        }
+        libroRepository.saveAll(libros);
+        Registro registro = new Registro();
+        registro.setLibrosReservados(libros);
+        registro.setClienteId(restTemplate.getForObject("/api/personas/aleatorio",ClienteDTO.class).getId());
+        registro.setNombreCliente(restTemplate.getForObject("/api/personas/aleatorio",ClienteDTO.class).getNombre());
+        registro.setFechaReserva(LocalDate.now());
+        return registro;
     }
 
     @Override
     public Registro devolverLibros(Long registroId) {
-        //TODO
-        /**
-         * Completar el metodo de devolucion
-         * Se debe buscar la reserva por su id,
-         * actualizar la fecha de devolucion y calcular el importe a facturar,
-         * actualizar el estado de los libros a DISPONIBLE
-         * y guardar el registro con los datos actualizados 
-         */
-        return null;
+        Registro registro = registroRepository.findById(registroId).get();
+        registro.setFechaDevolucion(LocalDate.now());
+        registro.setTotal(calcularCostoAlquiler(registro.getFechaReserva(),LocalDate.now(),registro.getLibrosReservados().size()));
+        for (Libro libro:registro.getLibrosReservados()){
+            libro.setEstado(EstadoLibro.DISPONIBLE);
+            libroRepository.save(libro);
+        }
+        return registroRepository.save(registro);
     }
 
     @Override
@@ -64,27 +73,27 @@ public class BibliotecaServiceImpl implements BibliotecaService {
 
     // Cálculo de costo de alquiler
     private BigDecimal calcularCostoAlquiler(LocalDate inicio, LocalDate fin, int cantidadLibros) {
-        //TODO
-        /**
-         * Completar el metodo de calculo
-         * se calcula el importe a pagar por libro en funcion de la cantidad de dias,
-         * es la diferencia entre el alquiler y la devolucion, respetando la siguiente tabla:
-         * hasta 2 dias se debe pagar $100 por libro
-         * desde 3 dias y hasta 5 dias se debe pagar $150 por libro
-         * más de 5 dias se debe pagar $150 por libro + $30 por cada día extra
-         */
-        return null;
+        BigDecimal total = new BigDecimal(cantidadLibros);
+        long diferenciaDias = ChronoUnit.DAYS.between(inicio, fin);
+        if (diferenciaDias<=2){
+            total = total.multiply(BigDecimal.valueOf(100));
+        } else if (diferenciaDias<=5) {
+            total = total.multiply(BigDecimal.valueOf(150));
+        }else {
+            BigDecimal costoBase = BigDecimal.valueOf(150);
+            total = total.multiply(costoBase);
+            long diasExtra = diferenciaDias - 5;
+            BigDecimal costoAdicional =
+                    BigDecimal.valueOf(30)
+                            .multiply(BigDecimal.valueOf(diasExtra)).multiply(BigDecimal.valueOf(cantidadLibros));
+            total = total.add(costoAdicional);
+        }
+        return total;
     }
 
     @Override
     public List<Registro> informeSemanal(LocalDate fechaInicio) {
-        //TODO
-        /**
-         * Completar el metodo de reporte semanal
-         * se debe retornar la lista de registros de la semana tomando como referencia
-         * la fecha de inicio para la busqueda
-         */
-        return null;
+        return registroRepository.obtenerRegistrosSemana(fechaInicio,fechaInicio.plusDays(7));
     }
 
     @Override
@@ -93,8 +102,8 @@ public class BibliotecaServiceImpl implements BibliotecaService {
         /**
          * Completar el metodo de reporte de libros mas alquilados
          * se debe retornar la lista de libros mas alquilados
-         */ 
-        return null;
+         */
+        return registroRepository.obtenerLibrosMasAlquilados();
     }
 
 }
